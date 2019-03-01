@@ -1,16 +1,10 @@
 package com.crossoverjie.cim.common.data.construct;
 
-import java.util.Arrays;
-import java.util.Comparator;
 
-/**
- * Function:根据 key 排序的 Map
- *
- * @author crossoverJie
- * Date: 2019-02-25 18:17
- * @since JDK 1.8
- */
-public class SortArrayMap {
+import java.util.Arrays;
+
+
+public class SortArrayMapV2 {
 
     /**
      * 核心数组
@@ -24,12 +18,13 @@ public class SortArrayMap {
      */
     private int size = 0;
 
-    public SortArrayMap() {
+    public SortArrayMapV2() {
         buckets = new Node[DEFAULT_SIZE];
     }
 
     /**
      * 写入数据
+     *
      * @param key
      * @param value
      */
@@ -41,6 +36,7 @@ public class SortArrayMap {
 
     /**
      * 校验是否需要扩容
+     *
      * @param size
      */
     private void checkSize(int size) {
@@ -53,24 +49,25 @@ public class SortArrayMap {
     }
 
     /**
+     * 二分查找
      * 顺时针取出数据
+     *
      * @param key
      * @return
      */
+
     public String firstNodeValue(long key) {
-        if (size == 0){
-            return null ;
-        }
-        for (Node bucket : buckets) {
-            if (bucket == null){
-                continue; // 这个地方不应该break吗？
-            }
-            if (bucket.key >= key) {
-                return bucket.value;
-            }
+        if (size == 0) {
+            return null;
         }
 
-        return buckets[0].value;
+        int index = Arrays.binarySearch(buckets, 0, size, new Node(key, ""));
+        int insertIndex = -index - 1;
+        if (insertIndex < size) {
+            return buckets[insertIndex].value;
+        } else {
+            return buckets[0].value;
+        }
 
     }
 
@@ -78,16 +75,7 @@ public class SortArrayMap {
      * 排序
      */
     public void sort() {
-        Arrays.sort(buckets, 0, size, new Comparator<Node>() {
-            @Override
-            public int compare(Node o1, Node o2) {
-                if (o1.key > o2.key) {
-                    return 1;
-                } else {
-                    return -1;
-                }
-            }
-        });
+        Arrays.sort(buckets, 0, size);
     }
 
     public void print() {
@@ -106,7 +94,7 @@ public class SortArrayMap {
     /**
      * 数据节点
      */
-    private class Node {
+    private class Node implements Comparable<Node> {
         public Long key;
         public String value;
 
@@ -123,6 +111,15 @@ public class SortArrayMap {
                     '}';
         }
 
+        @Override
+        public int compareTo(Node otherNode) {
+            if (key > otherNode.key) {
+                return 1;
+            } else {
+                return -1;
+            }
+        }
     }
 
 }
+
